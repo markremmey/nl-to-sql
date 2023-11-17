@@ -49,3 +49,11 @@ body {
 #file-upload {
     margin-left: 10px;
 }
+
+.message.user {
+    background-color: #e0ffe0;
+}
+
+.message.agent {
+    background-color: #ffe0e0;
+}
