@@ -1,4 +1,5 @@
-document.getElementById('upload-button').addEventListener('click', function() {
+document.getElementById('upload-button').addEventListener('click', function(e) {
+    e.preventDefault();
     const fileInput = document.getElementById('file-upload');
     const file = fileInput.files[0];
     const formData = new FormData();

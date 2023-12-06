@@ -7,24 +7,34 @@ import requests
 import sqlite3
 
 from flask import (
-    Flask, request, stream_with_context, Response, flash
+    Flask, request, stream_with_context, Response, flash, session
 )
 
+from flask_session import Session
+from dotenv import load_dotenv
 from flask_cors import CORS
+
 app = Flask(__name__)
 CORS(app)
-from dotenv import load_dotenv
+app.secret_key = b'_5#y2Y"F4P8q\n\xfc]/'
+
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+
+
 load_dotenv()
-messages = []
 logging.basicConfig(level=logging.INFO)
 
 # logging.info('KEY: ', os.getenv("AZ_APIM_KEY"))
 def streamOpenAI(prompt):
-    
-    messages.append({"role": "user", "content": prompt})
+    if 'messages' not in session:
+        session['messages'] = []
+
+    session['messages'].append({"role": "user", "content": prompt})
 
     jsonRequest = {
-        "messages": messages,
+        "messages": session['messages'],
         "temperature": 0.7,
         "top_p": 0.95,
         "frequency_penalty": 0,
@@ -48,6 +58,7 @@ def streamOpenAI(prompt):
         logging.error(f"An error occurred while requesting {url}: {e}")
 
     logging.info('RESPONSE: ', response)
+    session.modified = True
     return response
 
 def createSQL(fileName):
@@ -98,7 +109,8 @@ def getAgentResponse():
             except:
                 pass
         logging.info('RESPONSE: ', response)
-        messages.append({"role": "assistant", "content": response})
+        session['messages'].append({"role": "assistant", "content": response})
+        session.modified = True
         # messages.append({"role": "agent", "content": response})
     reader = streamOpenAI(prompt) #Reader is a server sent event 
 
@@ -123,7 +135,6 @@ def upload_file():
         return 'No file part', 400 
 
     file.save('uploads/' + file.filename)
-
     createSQL(file.filename)
 
     return 'File uploaded successfully'

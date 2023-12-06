@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function(e) {
+    e.preventDefault()
     let agentMsgCount = 0
     let userMsgCount = 0
     
@@ -89,14 +90,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // The addEventListener method triggers a function to run on a particular event
-    document.getElementById('send-button').addEventListener('click', sendMessage);
+    document.getElementById('send-button').addEventListener('click', function(e) {
+        e.preventDefault()
+        sendMessage()
+    });
 
     document.getElementById('user-query').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
+            e.preventDefault()
             sendMessage();
         }
     });
-
-
-    // File Upload
 });
