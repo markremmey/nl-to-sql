@@ -62,6 +62,7 @@ def streamOpenAI(prompt):
     return response
 
 def createSQL(fileName):
+    # 
     csvPath = 'uploads/' + fileName
     data = pd.read_csv(csvPath)
     dbPath = 'finances.db'
@@ -138,6 +139,16 @@ def upload_file():
     createSQL(file.filename)
 
     return 'File uploaded successfully'
+
+def performSQLQuery(queryStr):
+    queryResult=''
+    conn = sqlite3.connect('finances.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM transactions')
+    rows = cursor.fetall()
+    for row in rows:
+        queryResult+=row + '\n'
+    return queryResult
 
 if __name__ == '__main__':
     app.run(debug=True)
